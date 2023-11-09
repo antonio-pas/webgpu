@@ -1,0 +1,33 @@
+*::before,
+*::after,
+* {
+  box-sizing: border-box;
+}
+body,
+html {
+  margin: 0;
+  padding: 0;
+}
+canvas {
+  width: 100vw;
+  height: 100vh;
+  display: block;
+}
+#debug {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+  width: calc(100vw - 4rem);
+  height: 20vh;
+  padding: 1rem;
+  border-radius: 0.25rem;
+  font-family: monospace;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  overflow-y: scroll;
+  overflow-wrap: break-word;
+  opacity: 0;
+}
+#debug.visible {
+  opacity: 1;
+}
