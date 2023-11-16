@@ -190,7 +190,7 @@ fn main(@location(0) position: vec3f) -> VertexOut {
 export const cubemapFragmentShader = `
 @fragment
 fn main(@location(0) worldPos: vec3f) -> @location(0) vec4f {
-  return vec4(normalize(worldPos)*0.5+0.5, 1.0);
+  return vec4(mix(vec3(1.0), vec3(0.5, 0.7, 1.0), worldPos.y*0.5+0.5), 1.0);
 }
 `;
 

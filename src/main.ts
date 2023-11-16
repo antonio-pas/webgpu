@@ -212,18 +212,9 @@ async function initWebGPU() {
     );
     return texture;
   }
-  const loadHDRImage = (src) =>
-    new Promise((resolve, reject) => {
-      const img = new HDRImage();
-      img.onload = () => resolve(img);
-      img.onerror = reject;
-      img.src = src;
-    });
   const diffTexture = await textureFromUrl(greyRockDiffuseTextureURL);
   const armTexture = await textureFromUrl(greyRockARMTextureURL);
-  // const hdrTexture = await textureFromUrl(
-  //   'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/4k/meadow_2_4k.hdr'
-  // );
+
   const sampler = device.createSampler({
     magFilter: 'linear',
     minFilter: 'linear',
