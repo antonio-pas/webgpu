@@ -295,11 +295,6 @@ async function initWebGPU() {
       dbg(`error ${e.message}`);
     }
   });
-  device.popErrorScope().then((e) => {
-    if (e && e.message && e.message.length != 0) {
-      dbg(`error ${e.message}`);
-    }
-  });
 
   function loop(time: number) {
     const commandEncoder = device.createCommandEncoder();
@@ -330,7 +325,7 @@ async function initWebGPU() {
     const far = 1000;
     const perspectiveMatrix = mat4.perspective(1.4, aspect, near, far);
 
-    const eye = [Math.sin(time / 1000.0) * 3, 1, Math.cos(time / 1000.0) * 3];
+    const eye = [Math.sin(time / 1000.0) * 3, -1, Math.cos(time / 1000.0) * 3];
     const target = [0, 0, 0];
     const up = [0, 1, 0];
 

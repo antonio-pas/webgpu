@@ -86,7 +86,16 @@ export const cubeVertices = new Float32Array([
   -0.5,  0.5,  0.5,  0.0,  1.0,  0.0,  0.0, 0.0,
   -0.5,  0.5, -0.5,  0.0,  1.0,  0.0,  0.0, 1.0
 ]);
-
+export const constants = `
+struct Light {
+  position: vec3f,
+  color: vec3f,
+  kind: u32
+}
+const lights = array(
+  Light(vec3f(0.5, 0.9, 0.3), vec3(1.5, 1.3, 1.2), 0)
+);
+`
 export const cubeVertexShader = `
 struct VertexOut {
   @builtin(position) position: vec4f,
@@ -111,19 +120,13 @@ fn main(@location(0) position: vec3f, @location(1) normal: vec3f, @location(2) t
   return vs_out;
 }`;
 export const cubeFragmentShader = `
+${constants}
 @group(0) @binding(1) var mySampler: sampler;
 @group(0) @binding(2) var diffuseTexture: texture_2d<f32>;
 @group(0) @binding(3) var armTexture: texture_2d<f32>;
-struct Light {
-  position: vec3f,
-  color: vec3f,
-  kind: u32
-}
 @fragment
 fn main(@location(0) position: vec3f, @location(1) normal: vec3f, @location(2) texCoords: vec2f) -> @location(0) vec4f {
-  var lights = array(
-    Light(vec3f(0.5, 0.9, 0.3), vec3(1.5, 1.3, 1.2), 0)
-  );
+  
   var diffuse = textureSample(diffuseTexture, mySampler, texCoords).rgb;
   var arm = textureSample(armTexture, mySampler, texCoords).rgb;
   var ao = arm.x;
@@ -165,7 +168,10 @@ export const quadFragmentShader = `
 fn main(@location(0) texCoords: vec2f) -> @location(0) vec4f {
   var tex = vec2(texCoords.x, 1.0 - texCoords.y);
   var color = textureSample(myTexture, mySampler, tex).rgb;
-  return vec4(color, 1.0);
+  var exposure = 1.0;
+  var gamma = 2.2;
+  var finalColor = pow(clamp(color * exposure, vec3(0.0), vec3(1.0)), vec3(1.0 / gamma));
+  return vec4(finalColor, 1.0);
 }`;
 
 export const cubemapVertexShader = `
@@ -188,9 +194,14 @@ fn main(@location(0) position: vec3f) -> VertexOut {
 }
 `;
 export const cubemapFragmentShader = `
+${constants}
 @fragment
 fn main(@location(0) worldPos: vec3f) -> @location(0) vec4f {
-  return vec4(mix(vec3(1.0), vec3(0.5, 0.7, 1.0), worldPos.y*0.5+0.5), 1.0);
+  var N = normalize(worldPos);
+  var col = mix(vec3(1.0), vec3(0.5, 0.7, 1.0), N.y*0.5+0.5);
+  var sun = max(0.0, dot(lights[0].position, N));
+  col += vec3(1.0, 0.8, 0.4) * vec3(pow(sun, 8.0) / (pow(sun,8.0)+1.0));
+  return vec4(col, 1.0);
 }
 `;
 
